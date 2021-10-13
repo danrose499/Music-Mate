@@ -31,16 +31,21 @@ keyDict = {
 }
 keyNum = keyDict[key]
 main_keys = keyList[keyNum]
+main_keys_formatted = [(main_keys[0]), (main_keys[1]+"m"), (main_keys[2]), (main_keys[3]+"m"), (main_keys[4]), (main_keys[5]+"m")]
+
 sd_keys = keyList[(keyNum+7)%12]
+sd_keys_formatted = [(sd_keys[0]+"7"), (sd_keys[1]+"7"), (sd_keys[2]+"7"), (sd_keys[3]+"7"), (sd_keys[4]+"7"), (sd_keys[5]+"7")]
+
 mi_keys = keyList[(keyNum+3)%12]
+mi_keys_formatted = [(mi_keys[0]), (mi_keys[2]), (mi_keys[3]+"m"), (mi_keys[4])]
 
 print("Main keys:")
-print((main_keys[0]) + (main_keys[1]+"m") + (main_keys[2]) + (main_keys[3]+"m") + (main_keys[4]) + (main_keys[5]+"m"))
+print(main_keys_formatted)
 
 print("Secondary Dominant keys:")
-print((sd_keys[0]+"7") + (sd_keys[1]+"7") + (sd_keys[2]+"7") + (sd_keys[3]+"7") + (sd_keys[4]+"7") + (sd_keys[5]+"7"))
+print(sd_keys_formatted)
 
 print("Modal Interchange keys:")
-print((mi_keys[0]) + (mi_keys[2]) + (mi_keys[3]+"m") + (mi_keys[4]))
+print(main_keys_formatted)
 
 #make_string = “ “.join(list)
