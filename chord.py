@@ -13,10 +13,6 @@ keyB  = ["B" , "G#", "E" , "Db", "Gb", "Eb"]
 
 keyList = [keyC, keyDb, keyD, keyEb, keyE, keyF, keyGb, keyG, keyAb, keyA, keyBb, keyB]
 
-# for i in range(12):
-#     for j in range(6):
-#         keyList[i][j] = keyList[i][j].rjust(2,' ')
-
 keyDict = {
     "C" : 0, 
     "C#": 1,  "Db": 1, 
@@ -33,6 +29,10 @@ keyDict = {
 }
 
 key = input("Select the key you want to play in: ")
+
+while(key not in keyDict.keys()):
+    key = input("\nError: That is not a valid key!\nSelect the key you want to play in: ")
+
 keyNum = keyDict[key]
 
 # Main Keys
@@ -63,11 +63,12 @@ for i in range(5):
 mi_keys_string = " ".join(mi_keys_formatted)
 
 # Printing
-print("\nSecondary Dominant keys:")
-print(sd_keys_string)
-
-print("Main keys:")
-print(main_keys_string)
-
-print("Modal Interchange keys:")
-print(mi_keys_string)
+print("\n\n")
+print("Secondary Dominant keys:", sd_keys_string, " } Don't Mix Chords! Go down (follow arrows)")
+print("                         |   |   |   |   |   |")
+print("                         V   V   V   V   V   V")
+print("  Start here: Main keys:", main_keys_string, " } Mix Chords or go up or down to any chord.")
+print("                         ^       ^       ^    ")
+print("                         V       V       V    ")
+print(" Modal Interchange keys:", mi_keys_string, "     } Mix chords or up to any of the three chords")
+print("\n\n")
