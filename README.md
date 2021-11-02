@@ -1,2 +1,2 @@
-# Chord-Progression-Finder
-Shows chords to use in progression based on selected key
+# Chord Progression Helper
+Input the key you want to play in and a selection of chords will be displayed to chose from to create a chord progression.
