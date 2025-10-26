@@ -157,11 +157,11 @@
         <div class="grid grid-cols-2 gap-3">
           <div class="space-y-2">
             <div class="text-xs uppercase tracking-wide text-slate-400">Guitar</div>
-            <ChordDiagram instrument="guitar" shape={guitarShapes[currentChord] || guitarShapes['C']} />
+            <ChordDiagram instrument="guitar" shape={guitarShapes[currentChord]} />
           </div>
           <div class="space-y-2">
             <div class="text-xs uppercase tracking-wide text-slate-400">Ukulele</div>
-            <ChordDiagram instrument="uke" shape={ukeShapes[currentChord] || ukeShapes['C']} />
+            <ChordDiagram instrument="uke" shape={ukeShapes[currentChord]} />
           </div>
         </div>
       </div>
