@@ -2,9 +2,10 @@
   export let name
   export let onPreview
   export let onAdd
+  export let onSelect
 </script>
 
-<button class="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700">
+<button class="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={() => onSelect?.()}>
   <span class="font-semibold">{name}</span>
   <div class="flex gap-2">
     <button type="button" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm" on:click|stopPropagation={() => onPreview?.()}>

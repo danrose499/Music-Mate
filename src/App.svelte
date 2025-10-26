@@ -11,6 +11,11 @@
   let currentChord = 'C'
   let progression = []
 
+  // When the key changes, select the first chord by default
+  $: if (chords && chords.length) {
+    currentChord = chords[0]
+  }
+
   let synth
   let reverb
   let chorus
@@ -20,6 +25,11 @@
   let started = false
   let loop = false
   let part
+
+  // Clicking a chord selects it (updates diagrams) without triggering audio
+  function selectChord(chord) {
+    currentChord = chord
+  }
 
   async function ensureAudio() {
     if (!started) {
@@ -137,7 +147,7 @@
         <h2 class="font-semibold text-slate-200">Chords in {key} major</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {#each chords as c}
-            <ChordButton name={c} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} />
+            <ChordButton name={c} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} onSelect={() => selectChord(c)} />
           {/each}
         </div>
       </div>
