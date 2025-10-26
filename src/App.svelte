@@ -131,7 +131,7 @@
 <main class="min-h-screen p-6 md:p-10">
   <div class="max-w-5xl mx-auto space-y-8">
     <header class="flex items-center justify-between">
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">MusicMate</h1>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Music Mate</h1>
       <div class="flex items-center gap-3">
         <label class="text-sm text-slate-300" for="key-select">Key</label>
         <select id="key-select" bind:value={key} class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
