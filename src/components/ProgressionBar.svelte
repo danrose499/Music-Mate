@@ -3,6 +3,7 @@
   export let onRemove
   export let onUpdateBeat
   export let onReorder
+  import dragIcon from '../assets/images/drag.png'
 
   function handleDragStart(e, i) {
     e.dataTransfer.setData('text/plain', String(i))
@@ -34,6 +35,7 @@
       on:drop={(e) => handleDrop(e, i)}
       role="listitem"
     >
+      <img src={dragIcon} alt="drag" class="w-4 h-4 opacity-70" draggable="false" />
       <span class="font-semibold min-w-12 text-center">{item?.chord ?? 'Rest'}</span>
       <label class="text-xs text-slate-300" for={`beats-${i}`}>beats</label>
       <input

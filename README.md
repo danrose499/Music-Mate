@@ -1,5 +1,7 @@
 # MusicMate (Svelte)
 
+https://danrose499.github.io/Music-Mate/
+
 A modern Svelte + Vite app to explore keys and build/play simple chord progressions with guitar and ukulele diagrams. Audio powered by Tone.js.
 
 ## Features
@@ -23,9 +25,3 @@ npm install
 npm run dev
 ```
 3. Open the printed local URL in your browser.
-
-Note: Browsers require a user gesture to start audio. Click any chord preview or the Play button to initialize audio.
-
-## Notes
-- Only sharp spellings are currently supported for keys/notes.
-- Chord diagrams are included for the basic diatonic chords; other chords fall back to C shapes.
