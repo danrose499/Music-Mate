@@ -166,7 +166,7 @@
         {/if}
       {/if}
     </div>
-    {#if ghostChord && overIndex === i + 1}
+    {#if ghostChord && overIndex === i + 1 && (i + 1) < progression.length}
       <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold">{ghostChord}</div>
     {/if}
   {/each}

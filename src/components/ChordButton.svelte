@@ -5,6 +5,7 @@
   export let onSelect
 
   let tempDragImage = null
+  import dragIcon from '../assets/images/drag.png'
 
   function handleDragStart(e) {
     e.dataTransfer.setData('application/x-chord', name)
@@ -42,7 +43,10 @@
   on:dragstart={handleDragStart}
   on:dragend={handleDragEnd}
 >
-  <span class="font-semibold">{name}</span>
+  <div class="flex items-center gap-2">
+    <img src={dragIcon} alt="drag" class="w-4 h-4 opacity-70" draggable="false" />
+    <span class="font-semibold">{name}</span>
+  </div>
   <div class="flex gap-2">
     <button type="button" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm" on:click|stopPropagation={() => onPreview?.()}>
       ▶︎
