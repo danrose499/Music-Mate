@@ -10,6 +10,8 @@
 
   let currentChord = 'C'
   let progression = []
+  let bpm = 92
+  let defaultBeats = 4
 
   // When the key changes, select the first chord by default
   $: if (chords && chords.length) {
@@ -45,9 +47,13 @@
       reverb = new Tone.Reverb({ decay: 2.4, wet: 0.18 })
       compressor = new Tone.Compressor({ threshold: -18, ratio: 2, attack: 0.003, release: 0.25 })
       synth.chain(filter, chorus, reverb, compressor, Tone.Destination)
-      Tone.Transport.bpm.value = 92
+      Tone.Transport.bpm.value = bpm
       started = true
     }
+  }
+
+  $: if (started) {
+    Tone.Transport.bpm.value = bpm
   }
 
   function strumChord(notes, time, direction = 'down') {
@@ -66,11 +72,11 @@
 
   function addToProgression(chord) {
     currentChord = chord
-    progression = [...progression, { chord, beats: 4 }]
+    progression = [...progression, { chord, beats: defaultBeats }]
   }
 
   function addRestToProgression() {
-    progression = [...progression, { chord: null, beats: 4 }]
+    progression = [...progression, { chord: null, beats: defaultBeats }]
   }
 
   function removeFromProgression(i) {
@@ -143,6 +149,8 @@
             <option value={k}>{k} major</option>
           {/each}
         </select>
+        <label class="text-sm text-slate-300" for="bpm-input">BPM</label>
+        <input id="bpm-input" type="number" min="30" max="240" step="1" bind:value={bpm} class="w-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2" />
       </div>
     </header>
 
@@ -183,6 +191,10 @@
         </label>
         <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={addRestToProgression}>Add rest</button>
         <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={() => { progression = [] }}>Clear</button>
+        <div class="flex items-center gap-2 text-sm text-slate-300">
+          <label for="default-beats">Default beats</label>
+          <input id="default-beats" type="number" min="1" step="1" bind:value={defaultBeats} class="w-16 bg-slate-900 border border-slate-700 rounded px-2 py-1" />
+        </div>
       </div>
     </section>
 
