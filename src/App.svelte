@@ -96,7 +96,11 @@
     progression = arr
   }
 
-  
+  function insertAt(index, chord) {
+    const i = Math.max(0, Math.min(index ?? progression.length, progression.length))
+    const item = { chord, beats: defaultBeats }
+    progression = [...progression.slice(0, i), item, ...progression.slice(i)]
+  }
 
   async function playProgression() {
     await ensureAudio()
@@ -181,7 +185,7 @@
 
     <section class="space-y-4">
       <h2 class="font-semibold text-slate-200">Progression</h2>
-      <ProgressionBar {progression} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} />
+      <ProgressionBar {progression} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
       <div class="flex flex-wrap items-center gap-3">
         <button class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold" on:click={playProgression}>Play progression</button>
         <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100" on:click={stopProgression}>Stop</button>
