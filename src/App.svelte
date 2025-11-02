@@ -53,7 +53,7 @@
   function strumChord(notes, time, direction = 'down') {
     const spread = 0.02 // seconds between string hits
     const arr = direction === 'down' ? notes : [...notes].reverse()
-    arr.forEach((n, i) => synth.triggerAttackRelease(n, '8n', time + i * spread))
+    arr.forEach((n, i) => synth.triggerAttackRelease(n, '4n', time + i * spread))
   }
 
   async function preview(chord) {
@@ -67,6 +67,10 @@
   function addToProgression(chord) {
     currentChord = chord
     progression = [...progression, { chord, beats: 4 }]
+  }
+
+  function addRestToProgression() {
+    progression = [...progression, { chord: null, beats: 4 }]
   }
 
   function removeFromProgression(i) {
@@ -100,10 +104,10 @@
     for (let i = 0; i < progression.length; i++) {
       const item = progression[i]
       const notes = item?.chord ? chordNotes(item.chord) : []
-      const strums = (item?.beats || 4) * 2
+      const strums = (item?.beats || 4)
       for (let s = 0; s < strums; s++) {
-        const dir = s % 2 === 0 ? 'down' : 'up'
-        events.push({ time: acc + s * (quarter / 2), notes, dir })
+        const dir = 'down'
+        events.push({ time: acc + s * quarter, notes, dir })
       }
       acc += (item?.beats || 4) * quarter
     }
@@ -177,6 +181,7 @@
           <input type="checkbox" bind:checked={loop} class="accent-cyan-500" />
           Loop
         </label>
+        <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={addRestToProgression}>Add rest</button>
         <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={() => { progression = [] }}>Clear</button>
       </div>
     </section>

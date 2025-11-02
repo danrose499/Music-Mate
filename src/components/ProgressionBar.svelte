@@ -34,7 +34,7 @@
       on:drop={(e) => handleDrop(e, i)}
       role="listitem"
     >
-      <span class="font-semibold min-w-12 text-center">{item?.chord}</span>
+      <span class="font-semibold min-w-12 text-center">{item?.chord ?? 'Rest'}</span>
       <label class="text-xs text-slate-300" for={`beats-${i}`}>beats</label>
       <input
         class="w-14 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm"
