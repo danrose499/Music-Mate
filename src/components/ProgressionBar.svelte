@@ -93,6 +93,17 @@
     overSide = 'right'
   }
 
+  function onEmptyDragOver(e) {
+    handleDragOver(e)
+    const types = Array.from(e.dataTransfer?.types || [])
+    const isChord = types.includes('application/x-chord')
+    let chord = null
+    try { chord = e.dataTransfer?.getData('application/x-chord') || null } catch {}
+    ghostChord = isChord ? (chord || ghostChord || 'Chord') : null
+    overIndex = 0
+    overSide = 'left'
+  }
+
   function onItemDrop(e, i) {
     e.preventDefault()
     e.stopPropagation()
@@ -136,6 +147,7 @@
   {#each progression as item, i}
     <div
       class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg cursor-move relative"
+      class:drop-highlight={(overIndex === i) || (overIndex === i + 1)}
       draggable="true"
       on:dragstart={(e) => handleDragStart(e, i)}
       on:dragover={(e) => onItemDragOver(e, i)}
@@ -167,15 +179,32 @@
       {/if}
     </div>
     {#if ghostChord && overIndex === i + 1 && (i + 1) < progression.length}
-      <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold">{ghostChord}</div>
+      <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">{ghostChord === 'REST' ? 'Rest' : ghostChord}</div>
     {/if}
   {/each}
 
-  {#if overIndex === progression.length}
+  {#if overIndex === progression.length && progression.length > 0}
     <div class="w-0.5 h-6 bg-cyan-400 rounded self-center" />
     {#if ghostChord}
-      <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold">{ghostChord}</div>
+      <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">{ghostChord === 'REST' ? 'Rest' : ghostChord}</div>
     {/if}
+  {/if}
+
+  {#if progression.length === 0}
+    <div
+      class="w-full min-h-[60px] flex items-center justify-center border-2 border-dashed border-slate-600/70 rounded-lg bg-slate-800/60 text-slate-300"
+      role="list"
+      aria-label="Empty progression drop zone"
+      on:dragover={onEmptyDragOver}
+      on:drop={(e) => onItemDrop(e, 0)}
+    >
+      <div class="pointer-events-none select-none text-sm">Drag chords here</div>
+      {#if ghostChord}
+        <div class="ml-3 px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">
+          {ghostChord === 'REST' ? 'Rest' : ghostChord}
+        </div>
+      {/if}
+    </div>
   {/if}
 </div>
 
@@ -184,6 +213,21 @@
   [draggable="true"]:active {
     opacity: 0.85;
     transform: scale(0.98);
+  }
+
+  /* drop target highlight */
+  .drop-highlight {
+    box-shadow: inset 0 0 0 2px rgba(34, 211, 238, 0.35);
+    transition: box-shadow 120ms ease;
+  }
+
+  /* ghost preview animation */
+  @keyframes ghostIn {
+    from { transform: scale(0.96); opacity: 0.6; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .ghost-preview {
+    animation: ghostIn 140ms ease-out both;
   }
 </style>
 

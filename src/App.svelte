@@ -98,7 +98,8 @@
 
   function insertAt(index, chord) {
     const i = Math.max(0, Math.min(index ?? progression.length, progression.length))
-    const item = { chord, beats: defaultBeats }
+    const normalizedChord = chord === 'REST' ? null : chord
+    const item = { chord: normalizedChord, beats: defaultBeats }
     progression = [...progression.slice(0, i), item, ...progression.slice(i)]
   }
 
@@ -165,11 +166,13 @@
           {#each chords as c}
             <ChordButton name={c} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} onSelect={() => selectChord(c)} />
           {/each}
+          <!-- Rest tile (draggable) -->
+          <ChordButton name="Rest" dragPayload="REST" onAdd={addRestToProgression} />
         </div>
       </div>
 
       <div class="space-y-4">
-        <h2 class="font-semibold text-slate-200">Chord Diagrams</h2>
+        <h2 class="font-semibold text-slate-200">Chord Diagrams: {currentChord}</h2>
         <div class="grid grid-cols-2 gap-3">
           <div class="space-y-2">
             <div class="text-xs uppercase tracking-wide text-slate-400">Guitar</div>
@@ -193,7 +196,6 @@
           <input type="checkbox" bind:checked={loop} class="accent-cyan-500" />
           Loop
         </label>
-        <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={addRestToProgression}>Add rest</button>
         <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700" on:click={() => { progression = [] }}>Clear</button>
         <div class="flex items-center gap-2 text-sm text-slate-300">
           <label for="default-beats">Default beats</label>
@@ -202,6 +204,6 @@
       </div>
     </section>
 
-    <footer class="pt-8 text-sm text-slate-400">Tip: Click a chord ▶︎ to preview. Click Add to append it to the progression. Each chord defaults to 4 beats.</footer>
+    <footer class="pt-8 text-sm text-slate-400">Tip: Click ▶︎ to preview. Click Add to append. Drag chords from the top grid into the progression and drag within the bar to reorder. Use the Rest tile for pauses. Adjust beats per chord with the number field; default beats applies to new items.</footer>
   </div>
 </main>

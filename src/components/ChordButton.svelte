@@ -3,14 +3,16 @@
   export let onPreview
   export let onAdd
   export let onSelect
+  export let dragPayload = null
 
   let tempDragImage = null
   import dragIcon from '../assets/images/drag.png'
 
   function handleDragStart(e) {
-    e.dataTransfer.setData('application/x-chord', name)
+    const payload = dragPayload ?? name
+    e.dataTransfer.setData('application/x-chord', payload)
     // Fallback for browsers that strip custom types during dragover/drag
-    e.dataTransfer.setData('text/plain', `CHORD:${name}`)
+    e.dataTransfer.setData('text/plain', `CHORD:${payload}`)
     e.dataTransfer.effectAllowed = 'copyMove'
     const img = document.createElement('div')
     img.textContent = name

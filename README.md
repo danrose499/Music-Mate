@@ -1,27 +1,32 @@
-# MusicMate (Svelte)
+# Music Mate
 
-https://danrose499.github.io/Music-Mate/
+Live: https://danrose499.github.io/Music-Mate/
 
-A modern Svelte + Vite app to explore keys and build/play simple chord progressions with guitar and ukulele diagrams. Audio powered by Tone.js.
+Music Mate is a lightweight Svelte app for exploring keys, previewing chord voicings, and building simple strummed progressions with smooth drag-and-drop.
 
 ## Features
-- Choose a key (major) and view diatonic triads
-- Click a chord to preview with a gentle strum
-- View guitar and ukulele chord diagrams
-- Add chords to a 4-slot progression and play a strummed loop
+- Diatonic triads per key (major) with quick preview
+- Guitar and ukulele chord diagrams
+- Progression builder with per-item beat counts and global default beats
+- Play/stop with a gentle strum engine and optional looping (Tone.js)
+- Drag-and-drop UX
+  - Drag chords from the top grid into the progression
+  - Drag within the progression to reorder
+  - Visual insert indicators and ghost previews
+  - Dedicated Rest tile (draggable) for pauses
 
 ## Tech
 - Svelte 4 + Vite 5
-- TailwindCSS 3
+- Tailwind CSS 3
 - Tone.js
 
-## Run locally
-1. Install dependencies
+## Development
+1) Install dependencies
 ```bash
 npm install
 ```
-2. Start dev server
+2) Start dev server
 ```bash
 npm run dev
 ```
-3. Open the printed local URL in your browser.
+3) Open the printed local URL in your browser.
