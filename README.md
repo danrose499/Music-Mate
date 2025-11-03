@@ -2,6 +2,8 @@
 
 Live: https://danrose499.github.io/Music-Mate/
 
+![App Page](src/assets/images/Screenshot.png?raw=true "App Page")
+
 Music Mate is a lightweight Svelte app for exploring keys, previewing chord voicings, and building simple strummed progressions with smooth drag-and-drop.
 
 ## Features
