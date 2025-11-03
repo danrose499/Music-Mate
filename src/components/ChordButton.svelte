@@ -46,13 +46,22 @@
   on:dragend={handleDragEnd}
 >
   <div class="flex items-center gap-2">
-    <img src={dragIcon} alt="drag" class="w-4 h-4 opacity-70" draggable="false" />
+    <img src={dragIcon} alt="drag" class="drag-icon w-4 h-4 opacity-70" draggable="false" />
     <span class="font-semibold">{name}</span>
   </div>
   <div class="flex gap-2">
     <button type="button" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm" on:click|stopPropagation={() => onPreview?.()}>
       ▶︎
     </button>
+
+<style>
+  /* Hide drag handle in mobile portrait mode */
+  @media (pointer: coarse) and (orientation: portrait) {
+    .drag-icon { display: none !important; }
+  }
+  /* Prevent long-press image drag ghosting on iOS */
+  img[draggable="false"] { -webkit-user-drag: none; }
+}</style>
     <button type="button" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm" on:click|stopPropagation={() => onAdd?.()}>
       Add
     </button>

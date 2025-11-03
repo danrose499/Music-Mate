@@ -4,6 +4,7 @@
   export let onUpdateBeat
   export let onReorder
   export let onInsert
+  export let isTouch = false
   import dragIcon from '../assets/images/drag.png'
 
   function handleDragStart(e, i) {
@@ -136,26 +137,33 @@
   function onDragEnd() {
     clearDragState()
   }
+
+  function moveLeft(i) {
+    if (i > 0) onReorder?.(i, i - 1)
+  }
+  function moveRight(i) {
+    if (i < progression.length - 1) onReorder?.(i, i + 1)
+  }
 </script>
 
 <div
   class="flex flex-wrap items-center gap-3"
   role="list"
-  on:dragover={onListDragOverEndSlot}
-  on:drop={(e) => onItemDrop(e, progression.length)}
+  on:dragover={!isTouch ? onListDragOverEndSlot : undefined}
+  on:drop={!isTouch ? (e) => onItemDrop(e, progression.length) : undefined}
 >
   {#each progression as item, i}
     <div
-      class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg cursor-move relative"
-      class:drop-highlight={(overIndex === i) || (overIndex === i + 1)}
-      draggable="true"
-      on:dragstart={(e) => handleDragStart(e, i)}
-      on:dragover={(e) => onItemDragOver(e, i)}
-      on:drop={(e) => onItemDrop(e, i)}
-      on:dragend={onDragEnd}
+      class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg relative"
+      class:drop-highlight={!isTouch && ((overIndex === i) || (overIndex === i + 1))}
+      draggable={!isTouch}
+      on:dragstart={!isTouch ? (e) => handleDragStart(e, i) : undefined}
+      on:dragover={!isTouch ? (e) => onItemDragOver(e, i) : undefined}
+      on:drop={!isTouch ? (e) => onItemDrop(e, i) : undefined}
+      on:dragend={!isTouch ? onDragEnd : undefined}
       role="listitem"
     >
-      <img src={dragIcon} alt="drag" class="w-4 h-4 opacity-70" draggable="false" />
+      <img src={dragIcon} alt="drag" class="drag-icon w-4 h-4 opacity-70" draggable="false" />
       <span class="font-semibold min-w-12 text-center">{item?.chord ?? 'Rest'}</span>
       <label class="text-xs text-slate-300" for={`beats-${i}`}>beats</label>
       <input
@@ -169,7 +177,14 @@
       />
       <button class="text-xs text-slate-300 hover:text-red-300 ml-1" on:click={() => onRemove?.(i)}>✕</button>
 
-      {#if overIndex !== null}
+      {#if isTouch}
+        <div class="ml-1 flex items-center gap-1">
+          <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" on:click={() => moveLeft(i)}>←</button>
+          <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" on:click={() => moveRight(i)}>→</button>
+        </div>
+      {/if}
+
+      {#if !isTouch && overIndex !== null}
         {#if overIndex === i}
           <div class="absolute -left-1 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-cyan-400 rounded" />
         {/if}
@@ -178,12 +193,12 @@
         {/if}
       {/if}
     </div>
-    {#if ghostChord && overIndex === i + 1 && (i + 1) < progression.length}
+    {#if !isTouch && ghostChord && overIndex === i + 1 && (i + 1) < progression.length}
       <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">{ghostChord === 'REST' ? 'Rest' : ghostChord}</div>
     {/if}
   {/each}
 
-  {#if overIndex === progression.length && progression.length > 0}
+  {#if !isTouch && overIndex === progression.length && progression.length > 0}
     <div class="w-0.5 h-6 bg-cyan-400 rounded self-center" />
     {#if ghostChord}
       <div class="px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">{ghostChord === 'REST' ? 'Rest' : ghostChord}</div>
@@ -195,11 +210,11 @@
       class="w-full min-h-[60px] flex items-center justify-center border-2 border-dashed border-slate-600/70 rounded-lg bg-slate-800/60 text-slate-300"
       role="list"
       aria-label="Empty progression drop zone"
-      on:dragover={onEmptyDragOver}
-      on:drop={(e) => onItemDrop(e, 0)}
+      on:dragover={!isTouch ? onEmptyDragOver : undefined}
+      on:drop={!isTouch ? (e) => onItemDrop(e, 0) : undefined}
     >
       <div class="pointer-events-none select-none text-sm">Drag chords here</div>
-      {#if ghostChord}
+      {#if !isTouch && ghostChord}
         <div class="ml-3 px-3 py-2 rounded-lg bg-cyan-500/30 border border-cyan-400 text-cyan-100 text-sm font-semibold ghost-preview">
           {ghostChord === 'REST' ? 'Rest' : ghostChord}
         </div>

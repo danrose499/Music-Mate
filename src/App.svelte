@@ -4,6 +4,7 @@
   import ChordDiagram from './components/ChordDiagram.svelte'
   import ChordButton from './components/ChordButton.svelte'
   import ProgressionBar from './components/ProgressionBar.svelte'
+  import { onMount } from 'svelte'
 
   let key = 'C'
   $: chords = diatonicTriads(key)
@@ -12,6 +13,7 @@
   let progression = []
   let bpm = 92
   let defaultBeats = 4
+  let showDiagrams = true
 
   // When the key changes, select the first chord by default
   $: if (chords && chords.length) {
@@ -27,6 +29,7 @@
   let started = false
   let loop = false
   let part
+  let isTouch = false
 
   // Clicking a chord selects it (updates diagrams) without triggering audio
   function selectChord(chord) {
@@ -51,6 +54,25 @@
       started = true
     }
   }
+
+  onMount(() => {
+    // Detect coarse pointer/touch devices
+    isTouch = (typeof window !== 'undefined') && (
+      (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+      ('ontouchstart' in window)
+    )
+
+    // Proactively unlock audio on first user interaction on mobile
+    const handler = async () => {
+      try { await ensureAudio() } catch {}
+      window.removeEventListener('pointerdown', handler)
+      window.removeEventListener('touchend', handler)
+      window.removeEventListener('click', handler)
+    }
+    window.addEventListener('pointerdown', handler, { capture: true })
+    window.addEventListener('touchend', handler, { capture: true })
+    window.addEventListener('click', handler, { capture: true })
+  })
 
   $: if (started) {
     Tone.Transport.bpm.value = bpm
@@ -156,6 +178,11 @@
         </select>
         <label class="text-sm text-slate-300" for="bpm-input">BPM</label>
         <input id="bpm-input" type="number" min="30" max="240" step="1" bind:value={bpm} class="w-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2" />
+        {#if !started}
+          <button class="px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-semibold" on:click={ensureAudio}>
+            Enable sound
+          </button>
+        {/if}
       </div>
     </header>
 
@@ -172,23 +199,30 @@
       </div>
 
       <div class="space-y-4">
-        <h2 class="font-semibold text-slate-200">Chord Diagrams: {currentChord}</h2>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="space-y-2">
-            <div class="text-xs uppercase tracking-wide text-slate-400">Guitar</div>
-            <ChordDiagram instrument="guitar" shape={guitarShapes[currentChord]} />
-          </div>
-          <div class="space-y-2">
-            <div class="text-xs uppercase tracking-wide text-slate-400">Ukulele</div>
-            <ChordDiagram instrument="uke" shape={ukeShapes[currentChord]} />
-          </div>
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold text-slate-200">Chord Diagrams: {currentChord}</h2>
+          <button class="text-sm px-3 py-1 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700" on:click={() => showDiagrams = !showDiagrams}>
+            {showDiagrams ? 'Hide' : 'Show'}
+          </button>
         </div>
+        {#if showDiagrams}
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-2">
+              <div class="text-xs uppercase tracking-wide text-slate-400">Guitar</div>
+              <ChordDiagram instrument="guitar" shape={guitarShapes[currentChord]} />
+            </div>
+            <div class="space-y-2">
+              <div class="text-xs uppercase tracking-wide text-slate-400">Ukulele</div>
+              <ChordDiagram instrument="uke" shape={ukeShapes[currentChord]} />
+            </div>
+          </div>
+        {/if}
       </div>
     </section>
 
     <section class="space-y-4">
       <h2 class="font-semibold text-slate-200">Progression</h2>
-      <ProgressionBar {progression} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
+      <ProgressionBar {progression} {isTouch} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
       <div class="flex flex-wrap items-center gap-3">
         <button class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold" on:click={playProgression}>Play progression</button>
         <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100" on:click={stopProgression}>Stop</button>
