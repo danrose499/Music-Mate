@@ -244,5 +244,11 @@
   .ghost-preview {
     animation: ghostIn 140ms ease-out both;
   }
+  /* Hide drag handle on mobile/tablet (coarse pointer) in all orientations */
+  @media (pointer: coarse) {
+    .drag-icon { display: none !important; }
+  }
+  /* Prevent long-press image drag ghosting on iOS */
+  img[draggable="false"] { -webkit-user-drag: none; }
 </style>
 

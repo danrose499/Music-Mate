@@ -64,12 +64,19 @@
 
     // Proactively unlock audio on first user interaction on mobile
     const handler = async () => {
-      try { await ensureAudio() } catch {}
+      try {
+        await ensureAudio()
+        if (Tone?.Destination?.context?.state === 'suspended') {
+          await Tone.Destination.context.resume()
+        }
+      } catch {}
       window.removeEventListener('pointerdown', handler)
+      window.removeEventListener('touchstart', handler)
       window.removeEventListener('touchend', handler)
       window.removeEventListener('click', handler)
     }
     window.addEventListener('pointerdown', handler, { capture: true })
+    window.addEventListener('touchstart', handler, { capture: true })
     window.addEventListener('touchend', handler, { capture: true })
     window.addEventListener('click', handler, { capture: true })
   })
@@ -178,11 +185,6 @@
         </select>
         <label class="text-sm text-slate-300" for="bpm-input">BPM</label>
         <input id="bpm-input" type="number" min="30" max="240" step="1" bind:value={bpm} class="w-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2" />
-        {#if !started}
-          <button class="px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-semibold" on:click={ensureAudio}>
-            Enable sound
-          </button>
-        {/if}
       </div>
     </header>
 

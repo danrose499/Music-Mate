@@ -55,8 +55,8 @@
     </button>
 
 <style>
-  /* Hide drag handle in mobile portrait mode */
-  @media (pointer: coarse) and (orientation: portrait) {
+  /* Hide drag handle on mobile/tablet (coarse pointer) in all orientations */
+  @media (pointer: coarse) {
     .drag-icon { display: none !important; }
   }
   /* Prevent long-press image drag ghosting on iOS */
