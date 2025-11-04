@@ -69,6 +69,15 @@
         if (Tone?.Destination?.context?.state === 'suspended') {
           await Tone.Destination.context.resume()
         }
+        // Brief, very quiet oscillator to reliably unlock iOS audio
+        try {
+          const unlockGain = new Tone.Gain(0.0005).toDestination()
+          const osc = new Tone.Oscillator(440, 'sine').connect(unlockGain)
+          osc.start()
+          osc.stop('+0.02')
+          // Dispose shortly after to free resources
+          setTimeout(() => { osc.dispose(); unlockGain.dispose() }, 100)
+        } catch {}
       } catch {}
       window.removeEventListener('pointerdown', handler)
       window.removeEventListener('touchstart', handler)
@@ -193,10 +202,10 @@
         <h2 class="font-semibold text-slate-200">Chords in {key} major</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {#each chords as c}
-            <ChordButton name={c} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} onSelect={() => selectChord(c)} />
+            <ChordButton name={c} {isTouch} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} onSelect={() => selectChord(c)} />
           {/each}
           <!-- Rest tile (draggable) -->
-          <ChordButton name="Rest" dragPayload="REST" onAdd={addRestToProgression} />
+          <ChordButton name="Rest" {isTouch} dragPayload="REST" onAdd={addRestToProgression} />
         </div>
       </div>
 
@@ -226,8 +235,12 @@
       <h2 class="font-semibold text-slate-200">Progression</h2>
       <ProgressionBar {progression} {isTouch} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
       <div class="flex flex-wrap items-center gap-3">
-        <button class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold" on:click={playProgression}>Play progression</button>
-        <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100" on:click={stopProgression}>Stop</button>
+        <button class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold"
+          on:click={playProgression}
+          on:touchstart|preventDefault={playProgression}>Play progression</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-100"
+          on:click={stopProgression}
+          on:touchstart|preventDefault={stopProgression}>Stop</button>
         <label class="flex items-center gap-2 text-sm text-slate-300">
           <input type="checkbox" bind:checked={loop} class="accent-cyan-500" />
           Loop

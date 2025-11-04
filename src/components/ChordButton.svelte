@@ -4,6 +4,7 @@
   export let onAdd
   export let onSelect
   export let dragPayload = null
+  export let isTouch = false
 
   let tempDragImage = null
   import dragIcon from '../assets/images/drag.png'
@@ -41,7 +42,7 @@
 <button
   class="flex items-center justify-between w-full px-4 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700"
   on:click={() => onSelect?.()}
-  draggable="true"
+  draggable={isTouch ? 'false' : 'true'}
   on:dragstart={handleDragStart}
   on:dragend={handleDragEnd}
 >
@@ -50,7 +51,9 @@
     <span class="font-semibold">{name}</span>
   </div>
   <div class="flex gap-2">
-    <button type="button" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm" on:click|stopPropagation={() => onPreview?.()}>
+    <button type="button" class="px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-sm"
+      on:click|stopPropagation={() => onPreview?.()}
+      on:touchstart|stopPropagation|preventDefault={() => onPreview?.()}>
       ▶︎
     </button>
 
@@ -62,7 +65,9 @@
   /* Prevent long-press image drag ghosting on iOS */
   img[draggable="false"] { -webkit-user-drag: none; }
 }</style>
-    <button type="button" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm" on:click|stopPropagation={() => onAdd?.()}>
+    <button type="button" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm"
+      on:click|stopPropagation={() => onAdd?.()}
+      on:touchstart|stopPropagation|preventDefault={() => onAdd?.()}>
       Add
     </button>
   </div>
