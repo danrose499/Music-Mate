@@ -57,6 +57,11 @@
       ▶︎
     </button>
 
+    <button type="button" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm"
+      on:click|stopPropagation={() => onAdd?.()}
+      on:touchstart|stopPropagation|preventDefault={() => onAdd?.()}>
+      Add
+    </button>
 <style>
   /* Hide drag handle on mobile/tablet (coarse pointer) in all orientations */
   @media (pointer: coarse) {
@@ -64,11 +69,6 @@
   }
   /* Prevent long-press image drag ghosting on iOS */
   img[draggable="false"] { -webkit-user-drag: none; }
-}</style>
-    <button type="button" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-900 text-sm"
-      on:click|stopPropagation={() => onAdd?.()}
-      on:touchstart|stopPropagation|preventDefault={() => onAdd?.()}>
-      Add
-    </button>
+</style>
   </div>
 </button>

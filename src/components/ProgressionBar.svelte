@@ -5,7 +5,15 @@
   export let onReorder
   export let onInsert
   export let isTouch = false
+  export let currentBeat = -1 // -1 means not playing
   import dragIcon from '../assets/images/drag.png'
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
+  function showContextMenu(index, event) {
+    dispatch('contextmenu', { index, event });
+  }
 
   function handleDragStart(e, i) {
     e.dataTransfer.setData('text/plain', String(i))
@@ -154,17 +162,24 @@
 >
   {#each progression as item, i}
     <div
-      class="flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-lg relative"
-      class:drop-highlight={!isTouch && ((overIndex === i) || (overIndex === i + 1))}
+      class={`chord-item flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 transform 
+        ${overIndex === i || overIndex === i + 1 ? 'bg-slate-700' : ''}
+        ${overIndex === i && overSide === 'left' ? 'border-r-2' : ''}
+        ${overIndex === i + 1 && overSide === 'right' ? 'border-l-2' : ''}
+        ${(overIndex === i && overSide === 'left') || (overIndex === i + 1 && overSide === 'right') ? 'border-cyan-500' : ''}
+        ${currentBeat >= item.startBeat && currentBeat < item.startBeat + item.beats ? 'active-beat' : ''}`}
       draggable={!isTouch}
       on:dragstart={!isTouch ? (e) => handleDragStart(e, i) : undefined}
       on:dragover={!isTouch ? (e) => onItemDragOver(e, i) : undefined}
       on:drop={!isTouch ? (e) => onItemDrop(e, i) : undefined}
-      on:dragend={!isTouch ? onDragEnd : undefined}
+      on:dragend={!isTouch ? clearDragState : undefined}
+      on:dragleave={!isTouch ? clearDragState : undefined}
+      on:touchstart={isTouch ? () => showContextMenu(i) : undefined}
+      on:contextmenu|preventDefault={(e) => showContextMenu(i, e)}
       role="listitem"
     >
       <img src={dragIcon} alt="drag" class="drag-icon w-4 h-4 opacity-70" draggable="false" />
-      <span class="font-semibold min-w-12 text-center">{item?.chord ?? 'Rest'}</span>
+      <span class="font-semibold min-w-12 text-center cursor-pointer hover:text-cyan-400" on:click={() => dispatch('select', item?.chord ?? 'Rest')}>{item?.chord ?? 'Rest'}</span>
       <label class="text-xs text-slate-300" for={`beats-${i}`}>beats</label>
       <input
         class="w-14 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm"
@@ -224,23 +239,31 @@
 </div>
 
 <style>
+  .chord-item {
+    border: 1px solid rgb(100 116 139 / 0.7); /* slate-500/70 */
+  }
+
+  .active-beat {
+    transform: scale(1.05);
+    border-color: rgb(34 211 238 / 0.5);
+    box-shadow: 0 0 10px rgb(34 211 238 / 0.5);
+    background-color: rgb(51 65 85 / 0.5);
+  }
+
   /* highlight the item being dragged for subtle feedback */
   [draggable="true"]:active {
     opacity: 0.85;
     transform: scale(0.98);
   }
-
-  /* drop target highlight */
-  .drop-highlight {
-    box-shadow: inset 0 0 0 2px rgba(34, 211, 238, 0.35);
-    transition: box-shadow 120ms ease;
+  .drag-icon {
+    cursor: grab;
   }
 
-  /* ghost preview animation */
   @keyframes ghostIn {
-    from { transform: scale(0.96); opacity: 0.6; }
+    from { transform: scale(0.8); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
+
   .ghost-preview {
     animation: ghostIn 140ms ease-out both;
   }

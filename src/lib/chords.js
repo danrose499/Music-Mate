@@ -55,6 +55,7 @@ export function chordNotes(chord) {
 // Chord shape set for demo (guitar: EADGBE left->right; uke: GCEA)
 // shape: { frets: number[], baseFret: number }
 export const guitarShapes = {
+  'Rest': { frets: [-1, -1, -1, -1, -1, -1], baseFret: 1 },
   'A': { frets: [-1, 0, 2, 2, 2, 0], baseFret: 1 },
   'Am': { frets: [-1, 0, 2, 2, 1, 0], baseFret: 1 },
   'Adim': { frets: [-1, -1, 1, 2, 1, 2], baseFret: 1 },
@@ -94,6 +95,7 @@ export const guitarShapes = {
 }
 
 export const ukeShapes = {
+  'Rest': { frets: [-1, -1, -1, -1], baseFret: 1 },
   'A': { frets: [2, 1, 0, 0], baseFret: 1 },
   'Am': { frets: [2, 0, 0, 0], baseFret: 1 },
   'Adim': { frets: [2, 3, 2, 3], baseFret: 1 },

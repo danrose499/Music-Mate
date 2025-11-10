@@ -27,9 +27,10 @@
   let tremolo
   let compressor
   let started = false
-  let loop = false
+  let loop = true
   let part
   let isTouch = false
+  let currentBeat = -1
 
   // Clicking a chord selects it (updates diagrams) without triggering audio
   function selectChord(chord) {
@@ -141,29 +142,48 @@
     progression = [...progression.slice(0, i), item, ...progression.slice(i)]
   }
 
-  async function playProgression() {
-    await ensureAudio()
-    Tone.Transport.stop()
+  // Reactive statement to update the sequence whenever the progression changes
+  $: if (progression && started) {
+    if (Tone.Transport.state === 'started') {
+      updateSequence(true) // restart playback
+    }
+  }
+
+  // This function builds or rebuilds the Tone.js Part from the progression
+  function updateSequence(restart = false) {
+    const wasRunning = Tone.Transport.state === 'started'
+    if (wasRunning) Tone.Transport.stop()
+
     Tone.Transport.cancel(0)
-    if (part) { part.dispose(); part = null }
+    if (part) {
+      part.dispose()
+      part = null
+    }
+    
+    if (progression.length === 0) {
+      currentBeat = -1
+      return
+    }
 
     const quarter = Tone.Time('4n').toSeconds()
     const events = []
     let acc = 0
-    for (let i = 0; i < progression.length; i++) {
-      const item = progression[i]
+    progression.forEach((item, i) => {
       const notes = item?.chord ? chordNotes(item.chord) : []
-      const strums = (item?.beats || 4)
-      for (let s = 0; s < strums; s++) {
+      const beats = item?.beats || 4
+      item.startBeat = Math.floor(acc / quarter)
+      for (let s = 0; s < beats; s++) {
         const dir = 'down'
-        events.push({ time: acc + s * quarter, notes, dir })
+        events.push({ time: acc + s * quarter, notes, dir, beat: item.startBeat + s, chord: item.chord })
       }
-      acc += (item?.beats || 4) * quarter
-    }
-
-    if (events.length === 0) return
+      acc += beats * quarter
+    })
 
     part = new Tone.Part((time, ev) => {
+      currentBeat = ev.beat
+      if (currentChord !== ev.chord) {
+        currentChord = ev.chord
+      }
       if (ev.notes && ev.notes.length) {
         strumChord(ev.notes, time, ev.dir)
       }
@@ -171,13 +191,23 @@
     part.loop = loop
     part.loopEnd = acc
 
-    Tone.Transport.start('+0.05')
+    if (restart || wasRunning) {
+      Tone.Transport.start('+0.05')
+    }
+  }
+
+  async function playProgression() {
+    await ensureAudio()
+    currentBeat = 0
+    updateSequence(true)
+    Tone.Transport.on('stop', () => { currentBeat = -1 })
   }
 
   function stopProgression() {
     Tone.Transport.stop()
     Tone.Transport.cancel(0)
     if (part) { part.dispose(); part = null }
+    currentBeat = -1
   }
 </script>
 
@@ -205,7 +235,7 @@
             <ChordButton name={c} {isTouch} onPreview={() => preview(c)} onAdd={() => addToProgression(c)} onSelect={() => selectChord(c)} />
           {/each}
           <!-- Rest tile (draggable) -->
-          <ChordButton name="Rest" {isTouch} dragPayload="REST" onAdd={addRestToProgression} />
+          <ChordButton name="Rest" {isTouch} dragPayload="REST" onAdd={addRestToProgression} onSelect={() => selectChord('Rest')} />
         </div>
       </div>
 
@@ -220,11 +250,11 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-2">
               <div class="text-xs uppercase tracking-wide text-slate-400">Guitar</div>
-              <ChordDiagram instrument="guitar" shape={guitarShapes[currentChord]} />
+              <ChordDiagram instrument="guitar" shape={{...guitarShapes[currentChord || 'Rest'], chord: currentChord || 'Rest'}} clickable={true} on:click={() => preview(currentChord)} />
             </div>
             <div class="space-y-2">
               <div class="text-xs uppercase tracking-wide text-slate-400">Ukulele</div>
-              <ChordDiagram instrument="uke" shape={ukeShapes[currentChord]} />
+              <ChordDiagram instrument="uke" shape={{...ukeShapes[currentChord || 'Rest'], chord: currentChord || 'Rest'}} clickable={true} on:click={() => preview(currentChord)} />
             </div>
           </div>
         {/if}
@@ -233,7 +263,7 @@
 
     <section class="space-y-4">
       <h2 class="font-semibold text-slate-200">Progression</h2>
-      <ProgressionBar {progression} {isTouch} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
+      <ProgressionBar {progression} {currentBeat} {isTouch} onRemove={removeFromProgression} onUpdateBeat={updateBeats} onReorder={reorderProgression} onInsert={insertAt} />
       <div class="flex flex-wrap items-center gap-3">
         <button class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold"
           on:click={playProgression}

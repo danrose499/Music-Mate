@@ -1,6 +1,6 @@
 # Music Mate
 
-Live: https://danrose499.github.io/Music-Mate/
+Live: https://danielrosenthal.dev/Music-Mate/
 
 ![App Page](src/assets/images/Screenshot.png?raw=true "App Page")
 
